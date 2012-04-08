@@ -10,7 +10,7 @@ cp apache-solr-3.5.0/dist/apache-solr-3.5.0.war tomcat/webapps/solr.war
 
 4 启动tomcat ./bin/startup.sh
 
-5 在tomcat/conf/Catalina/localhost/solr.xml
+5 在tomcat/conf/Catalina/localhost/solr.xs
 配置：
 <?xml version="1.0" encoding="UTF-8"?>
 <Context docBase="${catalina.home}/webapps/solr.war" debug="0" crossContext="true">
@@ -40,3 +40,7 @@ http://www.cold.dev.aifang.com:8080/solr/friendlink/admin/analysis.jsp
 
 scp 通过ssh copy 文件夹 参数 -r
 
+
+tomcat.sh
+启动时启用JAVA_OPTS
+export JAVA_OPTS="$JAVA_OPTS -Dsolr.solr.home=指定solr core 所在位置"
