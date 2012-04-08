@@ -1,0 +1,26 @@
+Field 参数说明：
+name 字段名字
+
+default
+    -字段的默认值
+indexed=true|false
+    -被索引,如果一个字段设为true,那么它可一进行: earchable, sortable, facetable
+stored=true|false
+    -true 则字段应当可检索
+compressed=true|false
+    -true 使用gzip压缩存储(只适用 compressable;TextField和StrField)
+compressThreshold=<integer>
+    -保证压缩到不小于一个大小
+multiValued=true|false
+    -字段是否可以多个值
+omitNorms=true|false
+    -true 则字段检索时被省略相关的规范
+omitTermFreqAndPositions=true|false
+    -true 省略这一领域的长远频率，位置和有效载荷	
+
+
+分词器：
+<tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1"/> 按单个字拆分
+
+词过滤：
+<filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" splitOnNumerics="1" />

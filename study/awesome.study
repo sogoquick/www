@@ -1,0 +1,22 @@
+程序窗口的转移和显示 
+转移到某个tag：Mod4 + Shift + 1-9（或在某个tag名上按Mod4+鼠标左键）
+增加到某些tag：Mod4 + Shift + Ctrl + 1-9
+转移到下一个窗口中的位置：Mod4 + Shift + j
+转移到上一个窗口中的位置：Mod4 + Shift + k
+
+布局修改 
+当前程序窗口宽度增加5％：Mod4 + Shift + h
+当前程序窗口宽度减少5％：Mod4 + Shift + l
+切换到下一种布局方式：Mod4 + Space
+切换到上一种布局方式：Mod4 + Ctrl + Space
+
+窗口管理 
+重启awesome：Mod4 + Ctrl + r
+退出awesome：Mod4 + Shift + q
+运行某个命令：Mod4 + r
+打开awesome菜单：Mod4 + w
+
+多显示器下的操作 
+切换到下一个屏幕：Mod4 + Ctrl + j
+切换到上一个屏幕：Mod4 + Ctrl + k
+将程序发送到下一个屏幕：Mod4 + o

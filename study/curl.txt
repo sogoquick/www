@@ -1,0 +1,1 @@
+curl -i http://service.dev.aifang.com:8487/solr/friendlink/update?commit=true post <add><doc><FIELD name="id">2</FIELD><FIELD name ="city_id">11</FIELD><FIELD name="friendlink_name">测试数据2</FIELD></doc></add>

@@ -1,0 +1,366 @@
+1 下载varnish
+http://repo.varnish-cache.org/source/varnish-3.0.2.tar.gz
+
+2 创建cache存放的文件夹及日志文件夹，用户组等
+1)、/usr/sbin/groupadd www -g 48
+/usr/sbin/useradd -u 48 -g www www
+mkdir -p /var/vcache
+chmod +w /var/vcache
+chown -R www:www /var/vcache
+
+2)、创建Varnish日志目录（/var/logs/）：
+mkdir -p /var/logs
+chmod +w /var/logs
+chown -R www:www /var/logs
+ls
+
+3 编译按转
+tar zxvf varnish-3.0.2.tar.gz
+cd varnish-3.0.2
+./configure --prefix=/usr/local/varnish
+make && make install
+
+4 配置vcl 文件
+
+5 启动varnish
+/usr/local/varnish/sbin/varnishd -n /var/vcache -f /usr/local/varnish/vcl.conf -a 0.0.0.0:8010 -s file,/var/vcache/varnish_cache.data,120M -g www -u www -w 120,300,10 -T 127.0.0.1:8011 -P client_http11=on
+
+6 启动varnishncsa用来将Varnish访问日志写入日志文件：
+/usr/local/varnish/bin/varnishncsa -n /var/vcache -w /var/logs/varnish.log &
+
+
+
+
+补充阅读
+
+varnishd 配置及其使用 
+varnishd是一款全新的cache软件，据作者说采用的是最新的软件体系机构，和现在的硬件体系配合紧密。远胜过以前的squid，相同配置下，据说1台能顶3-4台squid 
+varnishd简单安装 
+1.下载varnishd 
+varnish 官方网站是http://varnish.projects.linpro.no/ 
+2.编译，没什么说的，默认即可 
+tar -zxvf varnish-1.1.1.tar.gz;cd varnish-1.1.1; ./configure --prefix=/home/admin/varnishd;make ;make install 
+3.关于varnishd的启动 
+进入 /home/admin/varnishd/sbin/,使用 varnishd启动 
+启动参数说明 
+-a address:port # varnishd httpd监听地址及其端口 
+-b address:port # 后台服务器地址及其端口 
+# -b 
+# -b ':' 
+-d # 使用debug模式 
+-f file # varnishd 服务器存取规则文件 
+-F # Run in foreground 
+-h kind[,hashoptions] # Hash specification 
+# -h simple_list 
+# -h classic [default] 
+# -h classic, 
+-n dir # varnishd working directory 
+-P file # PID file 
+-p param=value # 服务器参数，用来优化性能 
+-s kind[,storageoptions] # 缓存内容存放方式 
+# -s malloc 
+# -s file [default: use /tmp] 
+# -s file, 
+# -s file,, 
+-t # Default TTL 
+-T address:port # telnet管理地址及其端口 
+-V # version 
+-w int[,int[,int]] # 工作线程数 
+# -w 
+# -w min,max 
+# -w min,max,timeout [default: -w1,1000,120] 
+一般使用varnishd -a address:port -b address:port 其他使用默认即可启动 
+注意:vcl 中指定 后台服务器的话就不用使用-b 参数了 
+4.关于vcl文件的使用说明 
+vcl是varnishd的存取策略，即varnishd的配置文件 
+#基本格式如下指定后台服务器机器端口 
+backend www { 
+set backend.host = "www.example.com"; 
+set backend.port = "http"; 
+} 
+#acl访问控制 
+acl local { 
+"locahost"; /* myself */ 
+"10.0.0.1"/8; /* and everyone on the local network */ 
+! "10.0.0.23"; /* except for the dialin router */ 
+} 
+#如果使用虚拟主机，请参照下面代码 
+backend www { 
+set backend.host = "www.example.com"; 
+set backend.port = "80"; 
+} 
+
+backend images { 
+set backend.host = "images.example.com"; 
+set backend.port = "80"; 
+} 
+
+sub vcl_recv { 
+if (req.http.host ~ "^(www.)?example.com$") { 
+set req.backend = www; 
+} elsif (req.http.host ~ "^images.example.com") { 
+set req.backend = images; 
+} else { 
+error 404 "Unknown virtual host"; 
+} 
+} 
+#关于cache存在时间设置 
+sub vcl_fetch { 
+if (obj.ttl < 120s) { 
+set obj.ttl = 120s; 
+} 
+} 
+#cache图片等内容配置 
+sub vcl_recv { 
+if (req.request == "GET" && req.url ~ "\.(gif|jpg||jpeg|tom|swf|css|js)$") { 
+lookup; 
+} 
+lookup; 
+} 
+5.关于服务器 param的设置 
+param有以下选项 
+user root (0) 
+group root (0) 
+default_ttl 14400 [seconds] 
+thread_pools 1 [pools] 
+thread_pool_max 12000 [threads] 
+thread_pool_min 4000 [threads] 
+thread_pool_timeout 10 [seconds] 
+overflow_max 100 [%] 
+http_workspace 8192 [bytes] 
+sess_timeout 5 [seconds] 
+pipe_timeout 60 [seconds] 
+send_timeout 20 [seconds] 
+auto_restart on [bool] 
+fetch_chunksize 128 [kilobytes] 
+sendfile_threshold unlimited [bytes] 
+vcl_trace off [bool] 
+listen_address 172.16.189.1:3128 
+listen_depth 1024 [connections] 
+srcaddr_hash 1049 [buckets] 
+srcaddr_ttl 720 [seconds] 
+backend_http11 on [bool] 
+client_http11 on [bool] 
+ping_interval 3 [seconds] 
+
+大家可以使用-p参数在启动时候进行配置和优化 
+例如 
+/home/admin/varnish/sbin/varnishd -f /etc/varnish/vcl.conf \ 
+-a 172.16.189.1:3128 \ 
+-s malloc \ 
+-p user root -p group root \ 
+-p default_ttl 14400 -p thread_pool_max 8000 -p send_timeout 20 \ 
+-p srcaddr_ttl 720 -p backend_http11 on -p client_http11 on \ 
+-w 4000,12000,10 -T 127.0.0.1:8080 
+6.关于varnishd的管理 
+管理功能的启用需要在启动varnishd的时候 启动 -T参数指定 telnet管理使用的地址和端口 
+使用telnet localhost 8080，然后输入help参看相关的管理选项 
+或者使用 /home/admin/varnishd/bin/varnishadm -T localhost:8080 cmd进行管理 
+使用/home/admin/varnishd/bin/varnishstat 来查看varnishd的运行情况 
+7.关于log 
+使用home/admin/varnishd/bin/varnishlog 和varnishncsa查看服务器访问log或者让其输出到文件来记录log 
+
+
+backend server1 {
+.host = “192.168.0.12″ ;
+.port = “8080″ ;
+}
+
+backend server2 {
+.host = “127.0.0.1″ ;
+.port = “8080″ ;
+}
+
+director myvarnish round-robin {
+{ .backend = server1; }
+{ .backend = server2; }
+}
+
+#但要记得在vcl_recv中设置bachend = myvarnish。
+
+sub vcl_recv
+{
+if (req.http.host !~ “www\.myvarnish\.com$”)
+{ error 404 “Unknown HostName!”; }
+set req.backend = myvarnish;
+}
+
+
+VCL 配置实例：
+# This is a basic VCL configuration file for varnish.  See the vcl(7)
+# man page for details on VCL syntax and semantics.
+# 
+# Default backend definition.  Set this to point to your content
+# server.
+# 
+ backend server1 {
+     .host = "192.168.181.234";
+     .port = "40080";
+ }
+ backend server2 {
+     .host = "192.168.181.235";
+     .port = "40080";
+ }
+ director mybackend random {
+   {.backend = server1; .weight = 5; }
+   {.backend = server2; .weight = 8; }
+}
+
+# 
+# Below is a commented-out copy of the default VCL logic.  If you
+# redefine any of these subroutines, the built-in logic will be
+# appended to your code.
+#
+sub vcl_recv {
+    if (req.restarts > 0) {
+        return (lookup);
+ if (req.restarts > 0) {
+        return (lookup);
+    }
+    set req.backend = mybackend;
+
+    #if (req.http.user-agent ~"(?i)spider|bot" 
+    #        || req.http.Cookie !~"aQQ_ajkguid") {
+    #    set req.backend = randomlb;
+    #} else  {
+    #    set client.identity = regsub(req.http.Cookie,
+    #            ".*(aQQ_ajkguid=[A-F0-9]{8}(-[A-Z0-9]{4}){3}-[A-F0-9]{12}).*",
+    #            "\1"
+    #            );
+    #    set req.backend = clientlb;
+    #}
+
+    if (req.request == "POST") {
+        return (pass);
+    }
+    if (req.http.Cookie ~ "debug|RELEASE_VERSION") {
+        return (pass);
+    }
+    if (req.url ~ "opt=preview|preview=") {
+        return (pass);
+    }
+    ##req.http.host == "www.aifang.com" pass to nginx 
+ }
+    ##req.http.host == "www.aifang.com" pass to nginx 
+    if (req.http.host == "aifang.com") {
+        return (pass);
+    }
+    #if (req.http.user-agent ~"(?i)spider|bot") {
+    #    return (lookup);
+    #}
+    #if (req.http.Cookie !~ "aQQ_ajkguid") {
+    #    return (pass);
+    #}
+    #if (req.http.Cookie !~ "ctid") {
+    #    return (pass);
+    #}
+    return (lookup);
+}
+
+sub vcl_pipe {
+#     # Note that only the first request to the backend will have
+#     # X-Forwarded-For set.  If you use X-Forwarded-For and want to
+#     # have it set for all requests, make sure to have:
+#     # set bereq.http.connection = "close";
+#     # here.  It is not set by default as it might break some broken web
+#     # applications, like IIS with NTLM authentication.
+    return (pipe);
+}
+sub vcl_pass {
+    return (pass);
+}
+
+sub vcl_hash {
+    hash_data(req.url);
+    if (req.http.host) {
+        hash_data(req.http.host);
+    } else {
+        hash_data(server.ip);
+    }
+    return (hash);
+}
+sub vcl_hit {
+    if (req.request == "PRUGE"
+            || req.http.Cache-Control ~ "no-cache"
+            || req.http.Cache-Control ~ "max-age=0"
+            || req.http.Pragma ~ "no-cache"
+       ) {
+        set obj.ttl = 0s;
+        return (restart);
+    }
+
+    if (obj.ttl > 86400s) {
+        # 未过期的页面，返回缓存的内容
+        return (deliver);
+    }
+    if (req.http.Cookie ~ "isp=true") {
+        # 过期，回源并更新缓存
+        set obj.ttl = 0s;
+        return (restart);
+    }
+    # 爬虫访问直接返回缓存的内容
+    return (deliver);
+}
+sub vcl_miss {
+    if (req.http.Cookie ~ "isp=true") {
+        return (fetch);
+    } else {
+        return (pass);
+    }
+}
+
+sub vcl_fetch {
+    if (beresp.status == 404 || beresp.status >= 500) {
+        set beresp.ttl = 0s;
+    }
+    if (req.url == "/favicon.ico")  {
+        set beresp.ttl = 864000s;
+    }
+    return (deliver);
+}
+sub vcl_deliver {
+    if (obj.hits > 0) {
+        set resp.http.X-Cache = obj.hits;
+        unset resp.http.Set-Cookie;
+    } else {
+        set resp.http.X-Cache = "MISS";
+    }
+    set resp.http.Via="sogo-test";
+    unset resp.http.X-Varnish;
+
+    if (resp.http.Cache-Control ~ "s-maxage=[1-9][0-9]*") {
+        set resp.http.Cache-Control = regsub(
+                resp.http.Cache-Control,
+                "s-maxage=[1-9][0-9]*",
+                "s-maxage=1"
+                );
+    }
+    return (deliver);
+}
+sub vcl_error {
+    set obj.http.Content-Type = "text/html; charset=utf-8";
+    set obj.http.Retry-After = "5";
+    synthetic {"
+        <?xml version="1.0" encoding="utf-8"?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+            <html>
+            <head>
+            <title>"} + obj.status + " " + obj.response + {"</title>
+            </head>
+            <body>
+            <h1>Error "} + obj.status + " " + obj.response + {"</h1>
+            <p>"} + obj.response + {"</p>
+            <h3>Guru Meditation:</h3>
+            <p>XID: "} + req.xid + {"</p>
+            <hr>
+            <p>Varnish cache server</p>
+            </body>
+            </html>
+            "};
+    return (deliver);
+}
+
+
+         
+

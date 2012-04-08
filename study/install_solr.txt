@@ -1,0 +1,42 @@
+1 下载jdk,tomcat,solr
+solr 下载地址，选择非src包
+http://www.apache.org/dyn/closer.cgi/lucene/solr/
+
+2 解压
+tar xvfz apache-solr-3.5.0.tgz
+cp apache-solr-3.5.0/dist/apache-solr-3.5.0.war tomcat/webapps/solr.war
+
+3 copy apache-solr-3.5.0/example/multicore/ to 自己定义的文件夹
+
+4 启动tomcat ./bin/startup.sh
+
+5 在tomcat/conf/Catalina/localhost/solr.xml
+配置：
+<?xml version="1.0" encoding="UTF-8"?>
+<Context docBase="${catalina.home}/webapps/solr.war" debug="0" crossContext="true">
+     <!-- 这里配置的是 Solr 运行的 Home 目录 -->
+     <Environment name="solr/home" type="java.lang.String" value="/usr/local/solr/multicore" override="true" /> 
+</Context>
+
+6 在指定的solr/conf 下配置solr.xml 实例
+
+7 重启tomcat
+
+搜索输入中文时乱码解决方法，在tomcat server.xml配置文件中对应的虚拟机添加 URIEncoding = "UTF-8"
+
+添加分词包(IKAnlyzer) 还有其它分词：mmseg4j，庖丁解牛：
+1) 把下载好的IKAnalyzer3.2.8.jar放到 /tomcat/webapps/solr/WEB-INF/lib目录
+2) 修改solr/conf/scheme.xml文件。
+在众多fieldType里面加一条
+<fieldType name="text" class="solr.TextField"> IKTokenizer
+       <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/> 
+</fieldType>
+
+添加自有库
+ IKAnalyzer.cfg.xml(分词器扩展配置文件) 4. ext_stopword.dic(扩展的 stopword 词典,3.2 以上版本提供) 它的安装部署十分简单, IKAnalyzer3.X.jar 部署于项目的 lib 目 录 中 ;=========>注意,这里是放在/var/solr/lib/下 将 IKAnalyzer.cfg.xml 与 ext_stopword.dic 文件放置在代码根目录(对于 web 项目,通常是 WEB-INF/classes 目录,同 hibernate、log4j 等配置文件相同)下即可。 ==========>这里是放在/var/lib/tomcat6/webapps/solr/WEB-INF/classes(如没有该文件夹，创建它即可)下 放三个文件 ext_stopword.dic mydict.dic IKAnalyzer.cfg.xml 注意自定义词典的格式为\r\n结尾的no-signaure UTF8
+
+验证分词器的效果：
+http://www.cold.dev.aifang.com:8080/solr/friendlink/admin/analysis.jsp
+
+scp 通过ssh copy 文件夹 参数 -r
+
