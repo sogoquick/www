@@ -1,0 +1,3 @@
+:%s/four/4/g
+替换 :%s/\/code\//\/sogo\//g
+
