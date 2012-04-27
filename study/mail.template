@@ -1,0 +1,7 @@
+$toaddress = "$to";
+$fromsource = '=?utf-8?B?'.base64_encode('人力资源部').'?=';
+$fromaddress = 'MIME-Version: 1.0' . "\r\n";
+$fromaddress .= 'Content-type: text/plain; charset=utf-8' . "\r\n";
+$fromaddress .= 'From:'.$fromsource.' <shhr@anjuke.com>'."\r\n";
+$subject = '请假申请';
+$subject = '=?utf-8?B?'.base64_encode($subject).'?=';

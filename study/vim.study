@@ -1,3 +1,5 @@
 :%s/four/4/g
 替换 :%s/\/code\//\/sogo\//g
 
+批量搜索文件替换
+grep oldString -rl /path | xargs sed -i "s/oldString/newString/g"
