@@ -57,7 +57,7 @@ class fetch {
                    }
                 }
            }
-           //如果抓取的未老数据，或者失败，删掉该类文件
+           //如果抓取的为老数据，或者失败，删掉该类文件
            if(!$success) {
             unlink($this->ftcontent.$val['name'].$this->filetype);
            }
