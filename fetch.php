@@ -9,7 +9,11 @@ class fetch {
     
     private $ftcontent = '/home/sogo/code/www/ft-';
     
-    private $bodyrule = '/<div class="content" id="bodytext">[\t\s*\n]*<div>(.*)[\t\s*\n]*<div class=clearFloat>/isU';
+    private $bodyrule = '';
+    //没有分页的规则
+    private $bodyruleno = '/<div class="content" id="bodytext">[\t\s*\n]*<div>(.*)[\t\s*\n]*<div class="story_list">/isU';
+    //有分页时规则
+    private $bodyrulepage = '/<div class="content" id="bodytext">[\t\s*\n]*<div>(.*)[\t\s*\n]*<div class=clearFloat>/isU';
 
     private $domain = 'http://www.ftchinese.com';
 
@@ -32,13 +36,17 @@ class fetch {
         //按导航抓取
         foreach ($nav as $key => $val) {
            $eachlink = $this->fetch_each_link_content($val['link'],$val['name']); 
-           if(file_exists($this->havefetch)) $havefetch = file_get_contents($this->havefetch,true);
+           if(file_exists($this->havefetch)) {
+               $havefetch = file_get_contents($this->havefetch,true);
+           } else {
+               $havefetch = '';
+           }
            $success = false;
            //按每页内容抓取
            if($eachlink) {
                 foreach ($eachlink as $k => $v) {
                    $body = $this->fetch_content($v['link']);
-                   if(preg_match('/'.$val['article_id'].'/',$havefetch)){
+                   if(preg_match('/'.$v['article_id'].'/',$havefetch)){
                         continue;
                    }
                    if($body) {
@@ -66,11 +74,15 @@ class fetch {
             return '';
        }
         preg_match_all('/<div class="pagination">(.*)<\/div>/isU',$content,$pages);
-        $body = $this->get_body_content($content);
-        if(count($pages) > 1) {
+        $this->bodyrule = $this->bodyruleno;
+        if($pages && count($pages[1]) > 0) {
+            $this->bodyrule = $this->bodyrulepage;
+            $body = $this->get_body_content($content);
             preg_match_all('/<a href="(.*)?">(.*)?<\/a>/U',$pages[1][0],$pageurls);
             $pageurls = array_unique($pageurls[1]);
             $body .= $this->fetch_page_content($pageurls);
+        } else {
+            $body = $this->get_body_content($content);
         }
         return $body;
 
@@ -113,11 +125,15 @@ class fetch {
 
 	public function fetch_each_link_content($url,$channel) {
 		$content = $this->get_file_content_pass_wall($url);
-    preg_match_all('/<h3><a target="(.*)" href="(.*)?">(.*)?<\/a>/',$content,$match);
+        preg_match_all('/<h3><a target="(.*)" href="(.*)?">(.*)?<\/a>/',$content,$match);
+        $savefile = $this->ftcontent.$channel.$this->filetype;
+        if(file_exists($savefile)) {
+            unlink($savefile);
+        }
         foreach ($match[3] as $key => $val) {
             if($val) {
                 $nav[$key]['name'] = $val;
-                file_put_contents($this->ftcontent.$channel.$this->filetype,print_r($val,true)."\n",FILE_APPEND);
+                file_put_contents($savefile,print_r($val,true)."\n",FILE_APPEND);
                 if(preg_match('/http:/',$match[2][$key])) {
                     $nav[$key]['link'] = $match[2][$key];
                 } else {
