@@ -3,3 +3,5 @@
 
 批量搜索文件替换
 grep oldString -rl /path | xargs sed -i "s/oldString/newString/g"
+
+按住ctrl键，并且按两下W，即可在正常编辑区域和tags区域中切换。在tags区域中，把光标移动到变量、函数名称上，然后按下enter键，就会自动在正常编辑区域中定位到指定内容
