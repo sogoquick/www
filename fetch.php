@@ -31,6 +31,13 @@ class fetch {
         $this->waittofetch = 5;
     }
 
+    /**
+     * 抓取入口 
+     * 
+     * @param mixed $url 
+     * @access public
+     * @return void
+     */
     public function fetch($url) {
         $nav = $this->fetch_nav_content($url);
         //按导航抓取
@@ -47,11 +54,14 @@ class fetch {
                 foreach ($eachlink as $k => $v) {
                    $body = $this->fetch_content($v['link']);
                    if(preg_match('/'.$v['article_id'].'/',$havefetch)){
+                        print_r('已经抓取'.$v['article_id']."\n");
                         continue;
                    }
                    if($body) {
+                        print_r('开始抓取'.$v['article_id']."\n");
                         file_put_contents($this->havefetch,print_r($v['article_id'].",\n",true),FILE_APPEND); 
-                        file_put_contents($this->ftcontent.$val['name'].$this->filetype,print_r($v['name'],true)."\n\n",FILE_APPEND); 
+                        file_put_contents($this->ftcontent.$val['name'].$this->filetype,print_r($v['name'],true)."\n",FILE_APPEND); 
+                        file_put_contents($this->ftcontent.$val['name'].$this->filetype,print_r($v['link'],true)."\n\n",FILE_APPEND); 
                         file_put_contents($this->ftcontent.$val['name'].$this->filetype,print_r($body,true)."\n\n",FILE_APPEND); 
                         $success = true;
                    }
@@ -116,10 +126,12 @@ class fetch {
             return $result;
         }
         preg_match_all($this->bodyrule,$content,$body);
-        $body = preg_replace('/<p>/',"    ",$body[1][0]);
-        $body = preg_replace("/\n\n/","\n",$body);
-        $body = strip_tags($body);
-        $result = $body;
+        if(isset($body[1][0])) {
+             $body = preg_replace('/<p>/',"    ",$body[1][0]);
+             $body = preg_replace("/\n\n/","\n",$body);
+             $body = strip_tags($body);
+             $result = $body;
+        }
         return $result;
     }
 
