@@ -31,7 +31,7 @@ class SendMail {
              $mail->Username = "hanjunfeng@anjuke.com";
              $mail->Password = "missyou1984";
              $mail->AddReplyTo('hanjunfeng@anjuke.com', 'First Last');
-             $mail->AddAddress('coldarmyfeng@free.kindle.com', 'Feng');
+             $mail->AddAddress('hanjunfeng_39@iduokan.com', 'Feng');
              $mail->SetFrom('hanjunfeng@anjuke.com', 'Me');
              $mail->Subject = 'FT chinese';
              $mail->AltBody = 'Auto Sendmail with attachment'; 

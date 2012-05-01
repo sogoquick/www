@@ -1,4 +1,5 @@
 <?php
+require('mail.php');
 $fetch = new fetch();
 $content = $fetch->fetch('http://www.ftchinese.com');
 class fetch {
@@ -68,8 +69,13 @@ class fetch {
                 }
            }
            //如果抓取的为老数据，或者失败，删掉该类文件
+           $filename = $this->ftcontent.$val['name'].$this->filetype;
            if(!$success) {
-            unlink($this->ftcontent.$val['name'].$this->filetype);
+               if(file_exists($filename)) {
+                   unlink($filename);
+               }
+           } else {
+                SendMail::get_instance()->send($filename);
            }
         }
     }
