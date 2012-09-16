@@ -1,0 +1,4 @@
+查看文件及文件夹大小
+du -h 查看当前目录占用大小
+du -h * 详细
+du -h --max-depth=1 /forder/
