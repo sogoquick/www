@@ -2,3 +2,21 @@
 du -h 查看当前目录占用大小
 du -h * 详细
 du -h --max-depth=1 /forder/
+du -m * 查看当前文件夹下所有文件及文件夹大小
+
+//keychain ssh-agent使用
+ssh-agent 高速key缓存管理
+keychain 只保留ssh-agent 一个进程
+1 只使用ssh-agent 在终端使用
+ssh-agent bash --loing -i
+ssh-add
+
+2 添加到bash 里面 ~/.bash_profile
+添加
+1） eval `ssh-agent`
+2） ssh-agent ~/.ssh/id_rsa #id_rsa 对应的密钥
+
+3 使用keychain 守护一个ssh-agent进程
+1）/usr/bin/keychain ~/.ssh/id_rsa
+2) source ~/.keychain/{主机名}_sh  #注意.keychain 目录下多有多个文件，根据不同的终端执行命令，选择不同的处理文件
+
