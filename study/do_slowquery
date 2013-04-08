@@ -1,0 +1,15 @@
+#!/bin/bash
+base=`pwd`
+#time=`date '+%Y-%m-%d %H:%M:%S'`
+time=`date -d 'yesterday' +%y%m%d`
+file="$base""/$1"
+if [ $2 ];then
+    out_put=$2
+else
+    out_put="$file""-out-$time"
+fi
+
+cat "$file" | sed -e '/^# User@Host/d' -e '/^SET timestamp/d' -e '/^use /d' -e 's/`//g' | awk '{printf "%s ",$0}' | sed -e 's/# Time/\n# Time/g' | awk '{gsub(/# Query_time/,$1" "$2" "$4" Query_time");print $0;}' | cut -d" " -f 6- | sed 's/# Time/\nTime/g' | sed -e '/^$/d' | awk '{lstr=tolower($0);n=split(lstr,alstr," ");dbname="";ok=0;for(key=1;key<=n;key++){if(ok==1){dbname=alstr[key];break;}if(alstr[key]=="from" || alstr[key]=="into" || alstr[key]=="update") ok=1;} if(dbname=="")print "rollback"$0;else print dbname" "$0}' | sort -k1,1 -k5,5nr > "$out_put" 
+#rollback
+#replace
+exit 0

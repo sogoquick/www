@@ -1,0 +1,4 @@
+awk '$16 !~ /http:/' te100.log |grep -viE 'one.aifang.com|vip.aifang.com|spider|bot' | wc -l
+
+awk '{if($14 ~ /301/ && $16 == "\"-\"") sum+=1} END {print sum}' 31.all.log 
+
