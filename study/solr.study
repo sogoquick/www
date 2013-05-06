@@ -24,3 +24,10 @@ omitTermFreqAndPositions=true|false
 
 词过滤：
 <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" splitOnNumerics="1" />
+
+sum,count 查询方法
+http://dev.aifang.com:8487/solr/crm-income/select/?q=*:*&stats=true&stats.field=total_price&rows=0&indent=on&fq=type:2
+query string:
+stats : true
+stats.field: 字段名
+stats.facet：字段名
