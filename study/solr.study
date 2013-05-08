@@ -25,9 +25,17 @@ omitTermFreqAndPositions=true|false
 词过滤：
 <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" splitOnNumerics="1" />
 
+facet,stats:
 sum,count 查询方法
 http://dev.aifang.com:8487/solr/crm-income/select/?q=*:*&stats=true&stats.field=total_price&rows=0&indent=on&fq=type:2
 query string:
 stats : true
 stats.field: 字段名
 stats.facet：字段名
+
+根据不同的条件汇总汇总数据：
+$url.='q=*:*&facet=true&facet.limit=-1';
+foreach ($loupan_ids as $loupan_id){
+    $url.='&facet.query=loupan_id:'.$loupan_id;
+}
+
