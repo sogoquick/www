@@ -2,3 +2,6 @@ awk '$16 !~ /http:/' te100.log |grep -viE 'one.aifang.com|vip.aifang.com|spider|
 
 awk '{if($14 ~ /301/ && $16 == "\"-\"") sum+=1} END {print sum}' 31.all.log 
 
+awk '{if($14 ~ /301/ && $16 ~ /aifang.com/ && $0 !~ /spider/ && $0 !~ /bot/ && $0 !~ /Spider/) sum+=1} END {print sum}' 31.all.log
+
+wc -l
