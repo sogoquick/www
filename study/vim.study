@@ -47,3 +47,4 @@ grep oldString -rl /path | xargs sed -i "s/oldString/newString/g"
 149           
 150   q.......关闭NerdTree窗口
 151   ?.......切换是否显示Quick Help
+ctrl + w + w  目录文件之间切换
