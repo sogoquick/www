@@ -1,0 +1,60 @@
+MySQL数据同步备份
+A服务器： 192.168.1.2 主服务器master
+B服务器： 192.168.1.3 副服务器slave
+A服务器配置
+　　
+
+　　#MySQL –u root –p
+　　MySQL>GRANT FILE ON *.* TO backup@192.168.1.3 IDENTIFIED BY ‘1234’;
+　　MySQL>\exit
+　　
+上面是Master开放一个账号backup密码1234给IP:192.168.1.3有档案处理的权限
+MySQLadmin –u root –p shutdown
+备份Master任何数据库..通常都用tar指令。
+#tar –cvf /tmp/mysql.tar /var/lib/MySQL
+注意:tar的时候,MySQL是要在stop情况下
+在A机器上修改/etc/my.cnf
+在[MySQLd]区段内加入参数
+　　
+
+　　log-bin
+　　server-id=1
+　　sql-bin-update-same
+　　binlog-do-db=VBb
+　　
+重启A服务器MySQL
+此时因为有加入log-bin参数,因此开始有index产生了,在/var/lib/MySQL目录下有.index档案纪录数据库的异动log。
+B服务器配置
+设定/etc/my.cnf
+在[MySQLd]区段加入
+　　
+
+　　master-host=192.168.1.2
+　　master-user=backup
+　　master-password=1234
+　　master-port=3306
+　　server-id=2
+　　master-connect-retry=60 预设重试间隔60秒
+　　replicate-do-db=vbb 告诉slave只做VBb数据库的更新
+　　log-slave-updates
+　　
+将A上的MySQL.tar copy到B上
+用ftp传B的/tmp
+9.解压缩
+#cd /var/lib/
+状况测试
+1、A跟B网络及服务都正常情况下,由A端变化数据后,到B端浏览数据,检视是否有进行replication?！
+2、模拟B当机,或是B不一定需要一直跟A有连接。
+将由A端变化数据后,到B端浏览数据，B点应该是没有数据变化的
+　　
+
+　　#tar xvf /tmp/MySQL-snapshot.tar
+　　#chown –R mysql:mysql MySQL
+　　
+1重启B服务器的MySQL
+这时在/var/lib/MySQL目录会出现master.info,此档案纪录了Master MySQL Server的信息。
+状况测试
+1、A跟B网络及服务都正常情况下,由A端变化数据后,到B端浏览数据,检视是否有进行replication?!
+2、模拟B当机,或是B不一定需要一直跟A有连接。
+　　
+将由A端变化数据后,到B端浏览数据，B点应该是没有数据变化的。
