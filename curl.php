@@ -14,6 +14,7 @@ function get_content_by_curl($url){
     curl_setopt($hd,CURLOPT_HTTPHEADER,$header);
     $content = curl_exec($hd);
     curl_close($hd);
+    echo "";
     return $content;
 }
 echo get_content_by_curl('http://my.aifang.com/seo/user/s?p=3');
