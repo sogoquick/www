@@ -1,0 +1,11 @@
+.body {
+   transition:all 1; 
+}
+.container {
+   box-shadow: 20px;
+   -moz-transition: -moz-box-shadow 2s;
+   -webkit-border-radius: 4px;
+   animation: slide 1s alternate;
+   background: linear-gradient(top, #e3e3e3 10%, white);
+   display: -moz-box;
+}

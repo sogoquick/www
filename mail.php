@@ -29,7 +29,7 @@ class SendMail {
              $mail->Host = "smtp.anjuke.com";
              $mail->Port = 25;
              $mail->Username = "hanjunfeng@anjuke.com";
-             $mail->Password = "missyou1984";
+             $mail->Password = "guilin123,2";
              $mail->AddReplyTo('hanjunfeng@anjuke.com', 'First Last');
              $mail->AddAddress('hanjunfeng_39@iduokan.com', 'Feng');
              $mail->SetFrom('hanjunfeng@anjuke.com', 'Me');
@@ -38,6 +38,39 @@ class SendMail {
              $mail->MsgHTML('From Phpmailer');
              $mail->AddAttachment($file);      // attachment
              $mail->Send();
+             echo "Message Sent OK<p></p>\n";
+         } catch (phpmailerException $e) {
+             echo $e->errorMessage(); //Pretty error messages from PHPMailer
+         } catch (Exception $e) {
+             echo $e->getMessage(); //Boring error messages from anything else!
+         }
+    }
+
+    public function send_mail($address,$title = "Nothing",$content = "Nothing") {
+        if(empty($address)) {
+            echo "Please give your mail address";
+            return '';
+        }
+         //defaults to using php "mail()"; the true param means it will throw exceptions on errors, which we need to catch
+         $mail = new PHPMailer(true); 
+
+         try {
+            $mail->CharSet = "UTF-8";
+            $mail->IsSMTP();
+            $mail->SMTPDebug = 1;
+         
+            $mail->SMTPAuth   = true;                  // 启用 SMTP 验证功能
+            $mail->Host = "smtp.qq.com";
+            $mail->Port = 25;                  // SMTP服务器的端口号
+            $mail->Username   = "1582070474";  // SMTP服务器用户名
+            $mail->Password   = "guilin123";            // SMTP服务器密码
+            $mail->SetFrom('1582070474@qq.com', 'CD');
+            $mail->AddReplyTo("1582070474@qq.com","CD");
+            $mail->Subject    = $title;
+            $mail->AltBody    = $content; // optional, comment out and test
+            $mail->MsgHTML($content);
+            $mail->AddAddress($address, "Feng");
+            $mail->Send();
              echo "Message Sent OK<p></p>\n";
          } catch (phpmailerException $e) {
              echo $e->errorMessage(); //Pretty error messages from PHPMailer
