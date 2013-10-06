@@ -11,6 +11,8 @@ $mobilenum = $content;
 $mailbody = "";
 foreach ($mobilenum as $key => $val) {
     //需找6,8的多的号码
+    $count = 0;
+    $sixcount = 0;
     str_replace('8','',$val.$count);
     str_replace('6','',$val.$sixcount);
     if (preg_match('/^\\d*(1688|2688|2088|2008|5188|10010|10001|666|888|668|686|688|866|868|886|999)\\d*$/',$val)){
