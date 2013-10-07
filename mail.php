@@ -29,7 +29,7 @@ class SendMail {
              $mail->Host = "smtp.anjuke.com";
              $mail->Port = 25;
              $mail->Username = "hanjunfeng@anjuke.com";
-             $mail->Password = "guilin123,2";
+             $mail->Password = "xxxx";
              $mail->AddReplyTo('hanjunfeng@anjuke.com', 'First Last');
              $mail->AddAddress('hanjunfeng_39@iduokan.com', 'Feng');
              $mail->SetFrom('hanjunfeng@anjuke.com', 'Me');
@@ -58,14 +58,15 @@ class SendMail {
             $mail->CharSet = "UTF-8";
             $mail->IsSMTP();
             $mail->SMTPDebug = 1;
-         
+            
+            $mail->SMTPSecure = "ssl";
             $mail->SMTPAuth   = true;                  // 启用 SMTP 验证功能
-            $mail->Host = "smtp.qq.com";
-            $mail->Port = 25;                  // SMTP服务器的端口号
-            $mail->Username   = "1582070474";  // SMTP服务器用户名
+            $mail->Host = "smtp.126.com";
+            $mail->Port = 465;                  // SMTP服务器的端口号
+            $mail->Username   = "soqoquick";  // SMTP服务器用户名
             $mail->Password   = "guilin123";            // SMTP服务器密码
-            $mail->SetFrom('1582070474@qq.com', 'CD');
-            $mail->AddReplyTo("1582070474@qq.com","CD");
+            $mail->SetFrom('soqoquick@126.com', 'CD');
+            $mail->AddReplyTo("soqoquick@126.com","CD");
             $mail->Subject    = $title;
             $mail->AltBody    = $content; // optional, comment out and test
             $mail->MsgHTML($content);
