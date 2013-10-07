@@ -62,11 +62,11 @@ class SendMail {
             $mail->SMTPSecure = "ssl";
             $mail->SMTPAuth   = true;                  // 启用 SMTP 验证功能
             $mail->Host = "smtp.126.com";
-            $mail->Port = 465;                  // SMTP服务器的端口号
-            $mail->Username   = "soqoquick";  // SMTP服务器用户名
+            $mail->Port = 994;                  // SMTP服务器的端口号
+            $mail->Username   = "sogoquick";  // SMTP服务器用户名
             $mail->Password   = "guilin123";            // SMTP服务器密码
-            $mail->SetFrom('soqoquick@126.com', 'CD');
-            $mail->AddReplyTo("soqoquick@126.com","CD");
+            $mail->SetFrom('sogoquick@126.com', 'coldarmy');
+            $mail->AddReplyTo("sogoquick@126.com","coldarmy");
             $mail->Subject    = $title;
             $mail->AltBody    = $content; // optional, comment out and test
             $mail->MsgHTML($content);
