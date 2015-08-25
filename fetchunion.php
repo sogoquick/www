@@ -2,7 +2,11 @@
 $refresh_true = $argv[1];
 if ($refresh_true || !file_exists('/tmp/186.log')) {
     exec("rm /tmp/186.log");
+    if ($argv[2] == 186) {
+        exec("/usr/bin/curl 'http://num.10010.com/NumApp/chseNumList/serchNums?province=31&cityCode=310&preFeeSel=&keyValue=186&roleValue=&searchType=02&sortType=numAsc&searchValue=' |grep -o '1[8|5][0-3|5-9]\{9\}' > /tmp/186.log");
+    } else {
     exec("/usr/bin/curl 'http://num.10010.com/NumApp/chseNumList/serchNums?province=31&cityCode=310&sortType=numAsc' |grep -o '1[8|5][0-3|5-9]\{9\}' > /tmp/186.log");
+    }
 }
 $content = file_get_contents('/tmp/186.log',true);
 $content = explode("\n",$content);
